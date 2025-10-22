@@ -9,7 +9,7 @@ from coordinates import grid_to_5179_wkt
 def main():
     # Parser 설정
     parser = argparse.ArgumentParser(description="교통카드 데이터 후처리 파이프라인. 기본적으로 모든 작업을 수행하며, 특정 작업만 수행하려면 플래그를 사용하세요.")
-    parser.add_argument('--pk', action='store_true', help='복합 PK 생성')
+    # parser.add_argument('--pk', action='store_true', help='복합 PK 생성')
     parser.add_argument('--coords', action='store_true', help='좌표 변환 작업')
 
     parser.add_argument("--input_path", type=str, required=True,
