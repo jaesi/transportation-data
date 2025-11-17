@@ -42,19 +42,19 @@ from shapely.geometry import Point
 
 # -------------- 전역 설정 --------------
 # S3 설정
-AWS_CONN_ID = 'S3_bv_dropbox'
+AWS_CONN_ID = 's3_bv_dropbox'
 S3_BUCKET_NAME = 'bv-dropbox'
 
 # 업로드할 DB 접속 정보
-POSTGRES_CONN_ID = 'dataops_test_181'
-SCHEMA = 'temporary'
+POSTGRES_CONN_ID = 'dn_airflow'
+SCHEMA = 'transportation'
 
 # 그리드 변환용 매핑
 X_MAPPING = list("ABCDEFG")
 Y_MAPPING = list("BCDEFGH")
 
 # DAG 월 미입력 시 기본값
-DEFAULT_MONTH = "202506"
+DEFAULT_MONTH = ["202501"] # , "202502", "202503", "202504", "202505", "202506"
 
 # Helper 함수
 def convert_grid_to_5179(grid_id: str) -> Point | None:
@@ -323,17 +323,6 @@ def transportation_data_postprocessing_2025():
             logger.error(f"테이블 생성 중 오류 발생: {e}")
             raise
 
-        # 기존 데이터 삭제
-        truncate_sql = f"""
-        TRUNCATE TABLE {SCHEMA}.tb_metropolitan_work_od_{ym};
-        """
-        try:
-            logger.info(f"Executing TRUNCATE TABLE for {SCHEMA}.tb_metropolitan_work_od_{ym}")
-            pg.run(truncate_sql)
-        except Exception as e:
-            logger.error(f"기존 데이터 삭제 중 오류 발생: {e}")
-            raise
-
         # 파티션 테이블 생성
         partition_sql = f"""
             CREATE TABLE IF NOT EXISTS {SCHEMA}.tb_metropolitan_work_od_{ym}
@@ -347,6 +336,17 @@ def transportation_data_postprocessing_2025():
             logger.error(f"파티션 테이블 생성 중 오류 발생: {e}")
             raise
 
+        # 기존 데이터 삭제
+        truncate_sql = f"""
+        TRUNCATE TABLE {SCHEMA}.tb_metropolitan_work_od_{ym};
+        """
+        try:
+            logger.info(f"Executing TRUNCATE TABLE for {SCHEMA}.tb_metropolitan_work_od_{ym}")
+            pg.run(truncate_sql)
+        except Exception as e:
+            logger.error(f"기존 데이터 삭제 중 오류 발생: {e}")
+            raise
+        
         # 2) COPY FROM STDIN 으로 데이터 적재
         copy_sql = f"""
         COPY {SCHEMA}.tb_metropolitan_work_od (
