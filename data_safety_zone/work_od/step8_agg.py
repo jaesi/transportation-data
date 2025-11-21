@@ -8,6 +8,10 @@
 2) 퇴근 (직장 -> 주거 정류장) 케이스
 UNION ALL로 행 결합
 
+[입력 형태]
+- start: 'yyyymm'
+- end: 'yyyymm'
+
 """
 import argparse, os, holidays, duckdb
 from pathlib import Path
@@ -124,7 +128,7 @@ def main():
                     , f.트랜잭션ID
                     , CASE WHEN t1.정류장ID IS NOT NULL THEN t1.변환정류장ID 
                         ELSE f.승차정류장ID::VARCHAR END AS 승차정류장ID
-                    ,CASE WHEN t2.정류장ID IS NOT NULL THEN t2.변환정류장ID 
+                    , CASE WHEN t2.정류장ID IS NOT NULL THEN t2.변환정류장ID 
                         ELSE f.하차정류장ID::VARCHAR END AS 하차정류장ID
                     , f.승차일시
                     , f.하차일시

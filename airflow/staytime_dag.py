@@ -131,8 +131,8 @@ def transportation_stay_time_process():
                 END                     AS station_grid_id,
                 duration_type           AS stay_type,
                 duration_count          AS stay_count,
-                total_duration_time     AS total_stay_time,
-                duration_median_time    AS median_stay_time,
+                total_duration_time*60  AS total_stay_time,     -- 분단위 -> 초단위 복원
+                duration_median_time*60 AS median_stay_time,    -- 분단위 -> 초단위 복원
             -- 그리드 -> 좌표 변환
             ((list_position({x_list}, substr(cluster_id, 1, 1)) - 1 + 7) * 100000 + CAST(substr(cluster_id, 3, 5) AS BIGINT)) AS station_x,
             ((list_position({y_list}, substr(cluster_id, 2, 1)) - 1 + 14) * 100000 + CAST(substr(cluster_id, 8, 5) AS BIGINT)) AS station_y
